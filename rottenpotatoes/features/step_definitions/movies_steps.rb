@@ -5,6 +5,10 @@ Given /the following movies exist/ do |movies_table|
   end
 end
 
+Then /(.*) seed movies should exist/ do | n_seeds |
+  Movie.count.should be n_seeds.to_i
+end
+
 Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
   #  ensure that that e1 occurs before e2.
   #  page.body is the entire content of the page as a string.
@@ -16,6 +20,17 @@ When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
     step %{I #{uncheck.nil? ? '' : 'un'}check "ratings_#{rating}"}
   end
 end
+Then /I should (not )?see the following ratings: (.*)/ do |notsee, rating_list|
+  ratings = rating_list.split(', ')
+  ratings.each do |rating|
+    if notsee 
+      !expect(page).to have_content(rating)
+    else
+      expect(page).to have_content(rating)
+    end
+  end
+end
+
 
 Then /I should see all the movies/ do
   # Make sure that all the movies in the app are visible in the table
@@ -28,3 +43,4 @@ Then /the director of "(.*)" should be "(.*)"/ do |title, director|
   movie = Movie.find_by_title(title)
   expect(movie.director).to eq(director)
   end
+  
